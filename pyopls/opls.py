@@ -129,7 +129,7 @@ class OPLS(BaseEstimator, TransformerMixin):
         self.W_ortho_ = np.hstack(W_ortho)
         self.T_ortho_ = np.hstack(T_ortho)
         self.P_ortho_ = np.hstack(P_ortho)
-        self.P_ = np.hstack(P)
+        self.P = np.hstack(P)
         return self
 
     def transform(self, X):
