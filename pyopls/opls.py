@@ -48,7 +48,9 @@ class OPLS(BaseEstimator, TransformerMixin):
 
     Attributes
     ----------
-    P        : loadings orthogonal to y
+    P_nn     : loadings orthogonal to y not normalized
+
+    W_ortho_nn : weights orthogonal to y not normalized
     
     W_ortho_ : weights orthogonal to y
 
@@ -70,7 +72,8 @@ class OPLS(BaseEstimator, TransformerMixin):
         self.n_components = n_components
         self.scale = scale
         
-        self.P = None
+        self.P_nn = None
+        self.W_ortho_nn = None
         self.W_ortho_ = None
         self.P_ortho_ = None
         self.T_ortho_ = None
@@ -108,7 +111,8 @@ class OPLS(BaseEstimator, TransformerMixin):
         w = np.dot(X.T, Y)  # calculate weight vector
         w /= np.linalg.norm(w)  # normalize weight vector
 
-        P = []
+        P_nn = []
+        W_ortho_nn = []
         W_ortho = []
         T_ortho = []
         P_ortho = []
@@ -116,20 +120,22 @@ class OPLS(BaseEstimator, TransformerMixin):
         for i in range(self.n_components):
             t = np.dot(Z, w)  # scores vector
             p = np.dot(Z.T, t) / np.dot(t.T, t).item()  # loadings of X
-            P.append(p)
+            P_nn.append(p)
             w_ortho = p - np.dot(w.T, p).item() / np.dot(w.T, w).item() * w  # orthogonal weight
-            W_ortho.append(w_ortho)
+            W_ortho_nn.append(w_ortho)
             w_ortho = w_ortho / np.linalg.norm(w_ortho)  # normalize orthogonal weight
             t_ortho = np.dot(Z, w_ortho)  # orthogonal components
             p_ortho = np.dot(Z.T, t_ortho) / np.dot(t_ortho.T, t_ortho).item()
             Z -= np.dot(t_ortho, p_ortho.T)
             T_ortho.append(t_ortho)
+            W_ortho.append(w_ortho)
             P_ortho.append(p_ortho)
 
         self.W_ortho_ = np.hstack(W_ortho)
         self.T_ortho_ = np.hstack(T_ortho)
         self.P_ortho_ = np.hstack(P_ortho)
-        self.P = np.hstack(P)
+        self.P_nn = np.hstack(P_nn)
+        self.W_ortho_nn = np.hstack(W_ortho_nn)
         return self
 
     def transform(self, X):
