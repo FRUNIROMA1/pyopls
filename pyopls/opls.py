@@ -48,6 +48,8 @@ class OPLS(BaseEstimator, TransformerMixin):
 
     Attributes
     ----------
+    P        : loadings orthogonal to y
+    
     W_ortho_ : weights orthogonal to y
 
     P_ortho_ : loadings orthogonal to y
@@ -67,7 +69,8 @@ class OPLS(BaseEstimator, TransformerMixin):
     def __init__(self, n_components=5, scale=True):
         self.n_components = n_components
         self.scale = scale
-
+        
+        self.P = None
         self.W_ortho_ = None
         self.P_ortho_ = None
         self.T_ortho_ = None
@@ -105,6 +108,7 @@ class OPLS(BaseEstimator, TransformerMixin):
         w = np.dot(X.T, Y)  # calculate weight vector
         w /= np.linalg.norm(w)  # normalize weight vector
 
+        P = []
         W_ortho = []
         T_ortho = []
         P_ortho = []
@@ -117,6 +121,7 @@ class OPLS(BaseEstimator, TransformerMixin):
             t_ortho = np.dot(Z, w_ortho)  # orthogonal components
             p_ortho = np.dot(Z.T, t_ortho) / np.dot(t_ortho.T, t_ortho).item()
             Z -= np.dot(t_ortho, p_ortho.T)
+            P.append(p)
             W_ortho.append(w_ortho)
             T_ortho.append(t_ortho)
             P_ortho.append(p_ortho)
@@ -124,7 +129,7 @@ class OPLS(BaseEstimator, TransformerMixin):
         self.W_ortho_ = np.hstack(W_ortho)
         self.T_ortho_ = np.hstack(T_ortho)
         self.P_ortho_ = np.hstack(P_ortho)
-
+        self.P_ = np.hstack(P)
         return self
 
     def transform(self, X):
