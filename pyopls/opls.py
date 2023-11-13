@@ -116,13 +116,13 @@ class OPLS(BaseEstimator, TransformerMixin):
         for i in range(self.n_components):
             t = np.dot(Z, w)  # scores vector
             p = np.dot(Z.T, t) / np.dot(t.T, t).item()  # loadings of X
+            P.append(p)
             w_ortho = p - np.dot(w.T, p).item() / np.dot(w.T, w).item() * w  # orthogonal weight
+            W_ortho.append(w_ortho)
             w_ortho = w_ortho / np.linalg.norm(w_ortho)  # normalize orthogonal weight
             t_ortho = np.dot(Z, w_ortho)  # orthogonal components
             p_ortho = np.dot(Z.T, t_ortho) / np.dot(t_ortho.T, t_ortho).item()
             Z -= np.dot(t_ortho, p_ortho.T)
-            P.append(p)
-            W_ortho.append(w_ortho)
             T_ortho.append(t_ortho)
             P_ortho.append(p_ortho)
 
