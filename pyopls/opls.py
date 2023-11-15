@@ -182,8 +182,8 @@ class OPLS(BaseEstimator, TransformerMixin):
     
         # filter out orthogonal components of X
         for i in range(self.n_components):
-            t = np.dot(Z, self.W_ortho_[:, i]).reshape(-1, 1)
-            Z -= np.dot(t, self.P_ortho_[:, i].T.reshape(1, -1))
+            t = np.dot(Z, self.W_ortho_nn[:, i]).reshape(-1, 1)
+            Z -= np.dot(t, self.P_ortho_nn[:, i].T.reshape(1, -1))
     
         return Z
     
