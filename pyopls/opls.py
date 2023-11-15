@@ -190,8 +190,6 @@ class OPLS(BaseEstimator, TransformerMixin):
             Z -= np.dot(t, self.P_ortho_[:, i].T.reshape(1, -1))
 
         Znn=Z+self.x_mean_
-        if self.scale:
-            Znn *= self.x_std_
     
         return Znn
     
