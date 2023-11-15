@@ -164,6 +164,31 @@ class OPLS(BaseEstimator, TransformerMixin):
 
         return Z
 
+    
+     def transform_nn(self, X):
+        """Get the non-orthogonal components of X (which are considered in prediction).
+
+        Parameters
+        ----------
+        X : array-like, shape = [n_samples, n_features]
+            Training or test vectors, where n_samples is the number of samples and
+            n_features is the number of predictors (which should be the same predictors the model was trained on).
+
+        Returns
+        -------
+        X_res, X with the orthogonal data filtered out
+        """
+        Z = check_array(X, copy=True)
+
+        # filter out orthogonal components of X
+        for i in range(self.n_components):
+            t = np.dot(Z, self.W_ortho_[:, i]).reshape(-1, 1)
+            Z -= np.dot(t, self.P_ortho_[:, i].T.reshape(1, -1))
+
+        return Z
+    
+
+    
     def fit_transform(self, X, y=None, **fit_params):
         """ Learn and apply the filtering on the training data and get the filtered X
 
