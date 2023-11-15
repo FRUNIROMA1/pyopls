@@ -179,13 +179,21 @@ class OPLS(BaseEstimator, TransformerMixin):
         X_res, X with the orthogonal data filtered out
         """
         Z = check_array(X, copy=True)
+
+        Z -= self.x_mean_
+        if self.scale:
+            Z /= self.x_std_
     
         # filter out orthogonal components of X
         for i in range(self.n_components):
-            t = np.dot(Z, self.W_ortho_nn[:, i]).reshape(-1, 1)
+            t = np.dot(Z, self.W_ortho_[:, i]).reshape(-1, 1)
             Z -= np.dot(t, self.P_ortho_[:, i].T.reshape(1, -1))
+
+        Znn=Z+self.x_mean_
+        if self.scale:
+            Znn *= self.x_std_
     
-        return Z
+        return Znn
     
 
     
